@@ -14,7 +14,7 @@ class Writer:
         self.opt = opt
         self.save_dir = os.path.join(opt.checkpoints_dir, opt.name)
         self.log_name = os.path.join(self.save_dir, 'loss_log.txt')
-        self.testacc_log = os.path.join(self.save_dir, 'testacc_log.txt')
+        self.testacc_log = os.path.join(self.save_dir, 'testloss_log.txt')
         self.start_logs()
         self.nexamples = 0
         self.ncorrect = 0
@@ -33,7 +33,7 @@ class Writer:
         else:
             with open(self.testacc_log, "a") as log_file:
                 now = time.strftime("%c")
-                log_file.write('================ Testing Acc (%s) ================\n' % now)
+                log_file.write('================ Testing Loss (%s) ================\n' % now)
 
     def print_current_losses(self, epoch, i, losses, t, t_data):
         """ prints train loss to terminal / file """
@@ -53,10 +53,10 @@ class Writer:
             for name, param in model.net.named_parameters():
                 self.display.add_histogram(name, param.clone().cpu().data.numpy(), epoch)
 
-    def print_acc(self, epoch, acc):
-        """ prints test accuracy to terminal / file """
-        message = 'epoch: {}, TEST ACC: [{:.5} %]\n' \
-            .format(epoch, acc * 100)
+    def print_loss(self, epoch, loss):
+        """ prints test loss to terminal / file """
+        message = 'epoch: {}, TEST LOSS: [{:.5} ]\n' \
+            .format(epoch, loss)
         print(message)
         with open(self.testacc_log, "a") as log_file:
             log_file.write('%s\n' % message)
@@ -71,14 +71,16 @@ class Writer:
         """
         self.ncorrect = 0
         self.nexamples = 0
+        self.tot_loss = 0
+        self.samples = 0
 
-    def update_counter(self, ncorrect, nexamples):
-        self.ncorrect += ncorrect
-        self.nexamples += nexamples
+    def update_counter(self, current_loss, samples):
+        self.tot_loss += current_loss
+        self.samples += 1
 
     @property
-    def acc(self):
-        return float(self.ncorrect) / self.nexamples
+    def loss(self):
+        return float(self.tot_loss) / self.samples
 
     def close(self):
         if self.display is not None:

@@ -14,11 +14,12 @@ def run_test(epoch=-1):
     # test
     writer.reset_counter()
     for i, data in enumerate(dataset):
+        #print(type(data))
         model.set_input(data)
-        ncorrect, nexamples = model.test()
-        writer.update_counter(ncorrect, nexamples)
-    writer.print_acc(epoch, writer.acc)
-    return writer.acc
+        loss = model.test()
+        writer.update_counter(loss, data['mesh'].shape[0])
+    writer.print_loss(epoch, writer.loss)
+    return writer.loss
 
 
 if __name__ == '__main__':

@@ -126,12 +126,10 @@ class ClassifierModel:
         """
         with torch.no_grad():
             out = self.forward()
-            # compute number of correct
-            pred_class = out.data.max(1)[1]
-            label_class = self.labels
-            self.export_segmentation(pred_class.cpu())
-            correct = self.get_accuracy(pred_class, label_class)
-        return correct, len(label_class)
+            loss = self.criterion(out, self.labels)
+            self.export_segmentation(out.cpu())
+            #correct = self.get_accuracy(pred_class, label_class)
+        return loss
 
     def get_accuracy(self, pred, labels):
         """computes accuracy for classification / segmentation """
