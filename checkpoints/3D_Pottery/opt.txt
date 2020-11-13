@@ -10,7 +10,7 @@ epoch_count: 1
 export_folder: 
 fc_n: 100
 flip_edges: 0
-gpu_ids: [0]
+gpu_ids: []
 init_gain: 0.02
 init_type: normal
 is_train: True

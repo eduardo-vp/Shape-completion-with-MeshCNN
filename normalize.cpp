@@ -84,7 +84,11 @@ int main(int argc, char *argv[]){
 		p = p + delta;
 	}
 
-	double RMAX = 5;
+	for(Point &p : real_points){
+		p = p + delta;
+	}
+
+	double RMAX = 1;
 	function<bool(double)> check = [&](double f){
 		for(Point p : points){
 			p = p * f;

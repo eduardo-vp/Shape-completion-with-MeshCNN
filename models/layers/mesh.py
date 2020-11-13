@@ -105,7 +105,28 @@ class Mesh:
     def export_segments(self, segments):
         if not self.export_folder:
             return
+        print('export_folder')
+        print(self.export_folder)
         cur_segments = segments
+        print('pool_count')
+        print(self.pool_count)
+        filename, file_extension = os.path.splitext(self.filename)
+        print('filename')
+        print(filename)
+        print('file_extension')
+        print(file_extension)
+        file = '%s/%s%s' % (self.export_folder, filename, file_extension)
+        print('file')
+        print(file)
+        fh, abs_path = mkstemp()
+        print('fh')
+        print(fh)
+        print('abs_path')
+        print(abs_path)
+        
+        with os.fdopen(fh, 'w') as new_file:
+            pass
+        """
         for i in range(self.pool_count + 1):
             filename, file_extension = os.path.splitext(self.filename)
             file = '%s/%s_%d%s' % (self.export_folder, filename, i, file_extension)
@@ -126,6 +147,7 @@ class Mesh:
             if i < len(self.history_data['edges_mask']):
                 cur_segments = segments[:len(self.history_data['edges_mask'][i])]
                 cur_segments = cur_segments[self.history_data['edges_mask'][i]]
+        """
 
     def __get_cycle(self, gemm, edge_id):
         cycles = []

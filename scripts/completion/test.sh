@@ -10,10 +10,10 @@ python test.py \
 --ninput_edges 2900 \
 --pool_res 2300 2000 1700 \
 --resblocks 3 \
---lr 0.0001 \
+--lr 0.001 \
 --batch_size 4 \
 --num_aug 1 \
 --export_folder meshes \
---niter 20 \
---niter_decay 40 \
---gpu -1
+--niter 50 \
+--niter_decay 50 \
+--gpu 0

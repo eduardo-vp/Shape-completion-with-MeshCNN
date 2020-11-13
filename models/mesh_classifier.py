@@ -143,7 +143,8 @@ class ClassifierModel:
         return correct
 
     def export_segmentation(self, pred_seg):
-        if self.opt.dataset_mode == 'segmentation':
+        if self.opt.dataset_mode == 'completion':
             # cuidadito
             for meshi, mesh in enumerate(self.mesh):
+                # pred_seg[meshi, :] has shape (3 x input_edges)
                 mesh.export_segments(pred_seg[meshi, :])
