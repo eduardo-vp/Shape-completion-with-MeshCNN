@@ -13,7 +13,7 @@ if __name__ == '__main__':
     model = create_model(opt)
     writer = Writer(opt)
     total_steps = 0
-    model.load_network('latest')
+    # model.load_network('latest')
     for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
         epoch_start_time = time.time()
         iter_data_time = time.time()
