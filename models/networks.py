@@ -285,7 +285,7 @@ class UpConv(nn.Module):
             x1 = self.bn[0](x1)
         
         if self.final_layer:
-            x1 = F.tanh(x1)
+            x1 = torch.tanh(x1)
         else:
             x1 = F.relu(x1)
         x2 = x1
@@ -296,7 +296,7 @@ class UpConv(nn.Module):
             if self.residual:
                 x2 = x2 + x1
             if self.final_layer:
-                x2 = F.tanh(x2)
+                x2 = torch.tanh(x2)
             else:
                 x2 = F.relu(x2)
             x1 = x2
