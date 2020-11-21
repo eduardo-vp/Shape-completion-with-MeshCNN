@@ -6,9 +6,9 @@ python test.py \
 --name 3D_Pottery \
 --arch meshunet \
 --dataset_mode completion \
---ncf 32 64 128 256 \
+--ncf 16 32 64 128 256 \
 --ninput_edges 2900 \
---pool_res 2300 2000 1700 \
+--pool_res 2400 2200 2000 1800 \
 --resblocks 3 \
 --lr 0.001 \
 --batch_size 4 \
