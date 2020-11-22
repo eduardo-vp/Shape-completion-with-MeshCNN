@@ -21,7 +21,7 @@ max_dataset_size: inf
 name: 3D_Pottery
 ncf: [16, 32, 64, 128, 256]
 ninput_edges: 2900
-niter: 50
+niter: 0
 niter_decay: 50
 no_vis: False
 norm: batch

@@ -14,7 +14,7 @@ python train.py \
 --batch_size 4 \
 --num_aug 1 \
 --slide_verts 0.2 \
---niter 50 \
+--niter 0 \
 --niter_decay 50 \
 --gpu 0
 #
