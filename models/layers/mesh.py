@@ -105,25 +105,16 @@ class Mesh:
     def export_segments(self, segments):
         if not self.export_folder:
             return
-        print('export_folder')
-        print(self.export_folder)
+        # export_folder = ./checkpoints/3D_Pottery/meshes
         cur_segments = segments
-        print('pool_count')
-        print(self.pool_count)
         filename, file_extension = os.path.splitext(self.filename)
-        print('filename')
-        print(filename)
-        print('file_extension')
-        print(file_extension)
+        # filename = Piece852
+        # file_extension = .obj
         file = '%s/%s%s' % (self.export_folder, filename, file_extension)
-        print('file')
-        print(file)
+        # file = ./checkpoints/3D_Pottery/meshes/Piece852.obj
         fh, abs_path = mkstemp()
-        print('fh')
-        print(fh)
-        print('abs_path')
-        print(abs_path)
-        
+        # fh = 45
+        # abs_path = /tmp/tmpbqdya7v1
         with os.fdopen(fh, 'w') as new_file:
             pass
         """

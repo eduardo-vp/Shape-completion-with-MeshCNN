@@ -16,4 +16,4 @@ python test.py \
 --export_folder meshes \
 --niter 50 \
 --niter_decay 50 \
---gpu 0
+--gpu -1

@@ -125,6 +125,6 @@ int main(int argc, char *argv[]){
 	for(Face f : faces){
 		cout << "f " << f.u << " " << f.v << " " << f.w << endl;
 	}
-
+	
 	return 0;
 }
