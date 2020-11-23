@@ -3,6 +3,8 @@ from shutil import move
 import torch
 import numpy as np
 import os
+
+from torch import zero_
 from models.layers.mesh_union import MeshUnion
 from models.layers.mesh_prepare import fill_mesh
 
@@ -13,7 +15,7 @@ class Mesh:
     def __init__(self, file=None, opt=None, hold_history=False, export_folder=''):
         # inicializar todo en None
         self.vs = self.v_mask = self.filename = self.features = self.edge_areas = None
-        self.edges = self.gemm_edges = self.sides = None
+        self.edges = self.gemm_edges = self.sides = self.faces = None
         self.pool_count = 0
         # llenar la malla con todos sus datos
         # todos los atributos de mesh estan explicados en mesh_prepare.py (fill_mesh)
@@ -102,21 +104,62 @@ class Mesh:
             for edge in self.edges:
                 f.write("\ne %d %d" % (new_indices[edge[0]] + 1, new_indices[edge[1]] + 1))
 
+    def make_edge(self, u, v):
+        return (min(u,v), max(u,v))
+
     def export_segments(self, segments):
         if not self.export_folder:
             return
         # export_folder = ./checkpoints/3D_Pottery/meshes
-        cur_segments = segments
         filename, file_extension = os.path.splitext(self.filename)
         # filename = Piece852
         # file_extension = .obj
         file = '%s/%s%s' % (self.export_folder, filename, file_extension)
         # file = ./checkpoints/3D_Pottery/meshes/Piece852.obj
-        fh, abs_path = mkstemp()
+        # fh, abs_path = mkstemp()
         # fh = 45
         # abs_path = /tmp/tmpbqdya7v1
+        # print('file = {}'.format(file))
+        edge_id = {}
+        # print('segments shape')
+        # print(segments.shape)
+        # print('len(self.edges)')
+        # print(len(self.edges))
+        #assert segments.shape[1] == len(self.edges)
+        # print('len(self.edges) = {}'.format(len(self.ori_edges)))
+        with open(file, 'w') as new_file:
+            for i in range(len(self.ori_edges)):
+                u = self.ori_edges[i][0]
+                v = self.ori_edges[i][1]
+                # print('u = {}, v = {}'.format(u,v))
+                edge = self.make_edge(u,v)
+                edge_id[edge] = i
+                line = "v {} {} {}".format(segments[0][i], segments[1][i], segments[2][i])
+                # print(line)
+                new_file.write(line)
+            """
+            print('edgessss')
+            for i in range(15):
+                print('({},{})'.format(self.edges[i][0], self.edges[i][1]))
+            assert False
+            """
+            for face in self.faces:
+                u = face[0]
+                v = face[1]
+                w = face[2]
+                uv = edge_id[self.make_edge(u,v)]
+                uw = edge_id[self.make_edge(u,w)]
+                vw = edge_id[self.make_edge(v,w)]
+                line = "f {} {} {}".format(uv+1, uw+1, vw+1)
+                # print(line)
+                new_file.write(line)
+                # print(line)
+                # new_file.write(line)
+        # print(len(self.faces))
+        """
         with os.fdopen(fh, 'w') as new_file:
             pass
+        """
         """
         for i in range(self.pool_count + 1):
             filename, file_extension = os.path.splitext(self.filename)

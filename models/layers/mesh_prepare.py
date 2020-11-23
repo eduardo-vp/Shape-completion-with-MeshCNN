@@ -25,11 +25,15 @@ def fill_mesh(mesh2fill, file: str, opt):
                             edge_lengths=mesh_data.edge_lengths, 
                             edge_areas=mesh_data.edge_areas,
                             features=mesh_data.features, 
-                            sides=mesh_data.sides)
+                            sides=mesh_data.sides,
+                            faces=mesh_data.faces,
+                            ori_edges=mesh_data.ori_edges)
     # lista de vertices y sus posiciones (x,y,z) | vs = [ [x0 y0 z0] [x1 y1 z1] ... [x_n y_n z_n] ]
     mesh2fill.vs = mesh_data['vs']
     # lista de aristas | edges = [ [4 5] [5 7] [7 4] ... [8 9] ]
     mesh2fill.edges = mesh_data['edges']
+    # guarda una copia de edges que no se toca
+    mesh2fill.ori_edges = mesh_data['ori_edges']
     # ndarray de lista de adyacencia para las aristas (las 4 vecinas)
     mesh2fill.gemm_edges = mesh_data['gemm_edges']
     # cantidad de aristas
@@ -50,6 +54,8 @@ def fill_mesh(mesh2fill, file: str, opt):
     mesh2fill.features = mesh_data['features']
     # devuelve un ndarray complementario a gemm_edges (explicado en la funcion build_gemm )
     mesh2fill.sides = mesh_data['sides']
+    # devuelve un ndarray con shape (num_faces x 3)
+    mesh2fill.faces = mesh_data['faces']
 
 
 def get_mesh_path(file: str, num_aug: int):
@@ -88,6 +94,8 @@ def from_scratch(file, opt):
     mesh_data.vs, faces = fill_from_file(mesh_data, file)
     mesh_data.v_mask = np.ones(len(mesh_data.vs), dtype=bool)
     faces, face_areas = remove_non_manifolds(mesh_data, faces)
+    mesh_data.faces = np.asarray(faces)
+    assert opt.num_aug == 1
     if opt.num_aug > 1:
         faces = augmentation(mesh_data, opt, faces)
     build_gemm(mesh_data, faces, face_areas)
@@ -165,6 +173,15 @@ def build_gemm(mesh, faces, face_areas):
     edges = []
     edges_count = 0
     nb_count = []
+    # print('mesh.filename = {}'.format(mesh.filename))
+    # assert False
+    """
+    print('filename = {}'.format(mesh.filename))
+    assert mesh.filename == 'Piece852.obj'
+    print('facessss')
+    for i in range(7):
+        print('{} {} {}'.format(faces[i][0], faces[i][1], faces[i][2]))
+    """
     for face_id, face in enumerate(faces):
         faces_edges = []
         for i in range(3):
@@ -176,6 +193,13 @@ def build_gemm(mesh, faces, face_areas):
             if edge not in edge2key:
                 edge2key[edge] = edges_count
                 edges.append(list(edge))
+                """
+                if len(edges) < 15:
+                    print('just appended')
+                    print(edge)
+                else:
+                    assert False
+                """
                 edge_nb.append([-1, -1, -1, -1])
                 sides.append([-1, -1, -1, -1])
                 mesh.ve[edge[0]].append(edges_count)
@@ -194,6 +218,14 @@ def build_gemm(mesh, faces, face_areas):
             sides[edge_key][nb_count[edge_key] - 2] = nb_count[edge2key[faces_edges[(idx + 1) % 3]]] - 1
             sides[edge_key][nb_count[edge_key] - 1] = nb_count[edge2key[faces_edges[(idx + 2) % 3]]] - 2
     mesh.edges = np.array(edges, dtype=np.int32)
+    mesh.ori_edges = np.copy(mesh.edges)
+    # print(mesh.filename)
+    # print('len(mesh.edges) = {}'.format(len(mesh.edges)))
+    """
+    for i in range(15):
+        print('{} {}'.format(mesh.edges[i][0], mesh.edges[i][1]))
+    assert False
+    """
     mesh.gemm_edges = np.array(edge_nb, dtype=np.int64)
     mesh.sides = np.array(sides, dtype=np.int64)
     mesh.edges_count = edges_count

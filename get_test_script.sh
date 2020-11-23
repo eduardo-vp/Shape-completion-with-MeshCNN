@@ -6,7 +6,7 @@ shopt -s globstar
 n=0
 
 for file in ./datasets/3D_Pottery/train/*.obj; do
-    x=$((RANDOM%6))
+    x=$((RANDOM%18))
     if [ $x -eq 0 ]
     then
         out=${file//train/test}
