@@ -3,7 +3,7 @@ from shutil import move
 import torch
 import numpy as np
 import os
-
+import re
 from torch import zero_
 from models.layers.mesh_union import MeshUnion
 from models.layers.mesh_prepare import fill_mesh
@@ -116,6 +116,9 @@ class Mesh:
         # file_extension = .obj
         file = '%s/%s%s' % (self.export_folder, filename, file_extension)
         # file = ./checkpoints/3D_Pottery/meshes/Piece852.obj
+        file = re.sub('checkpoints','datasets',file)
+        file = re.sub('meshes','test_linegraph',file)
+        print('file = {}'.format(file))
         # fh, abs_path = mkstemp()
         # fh = 45
         # abs_path = /tmp/tmpbqdya7v1
@@ -131,18 +134,10 @@ class Mesh:
             for i in range(len(self.ori_edges)):
                 u = self.ori_edges[i][0]
                 v = self.ori_edges[i][1]
-                # print('u = {}, v = {}'.format(u,v))
                 edge = self.make_edge(u,v)
                 edge_id[edge] = i
-                line = "v {} {} {}".format(segments[0][i], segments[1][i], segments[2][i])
-                # print(line)
+                line = "v {} {} {}\n".format(segments[0][i], segments[1][i], segments[2][i])
                 new_file.write(line)
-            """
-            print('edgessss')
-            for i in range(15):
-                print('({},{})'.format(self.edges[i][0], self.edges[i][1]))
-            assert False
-            """
             for face in self.faces:
                 u = face[0]
                 v = face[1]
@@ -150,16 +145,8 @@ class Mesh:
                 uv = edge_id[self.make_edge(u,v)]
                 uw = edge_id[self.make_edge(u,w)]
                 vw = edge_id[self.make_edge(v,w)]
-                line = "f {} {} {}".format(uv+1, uw+1, vw+1)
-                # print(line)
+                line = "f {} {} {}\n".format(uv+1, uw+1, vw+1)
                 new_file.write(line)
-                # print(line)
-                # new_file.write(line)
-        # print(len(self.faces))
-        """
-        with os.fdopen(fh, 'w') as new_file:
-            pass
-        """
         """
         for i in range(self.pool_count + 1):
             filename, file_extension = os.path.splitext(self.filename)
